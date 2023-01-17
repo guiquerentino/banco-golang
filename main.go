@@ -2,46 +2,40 @@ package main
 
 import (
 	"banco-golang/model"
+	"database/sql"
+	"errors"
 	"fmt"
-	"os"
-	"os/exec"
-	"time"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
 
-	conta := model.Conta{"12345", "Conta Corrente", 100.50}
-	pessoa := model.Pessoa{conta, "Guilherme da Silva Querentino", "51944463810", "11975890780", "qrt", "guigui10"}
+	dsn := "root:@tcp(localhost:3306)/banco?charset=utf8mb4&parseTime=True&loc=Local"
 
-	conta2 := model.Conta{"123456", "Conta Corrente", 120.50}
-	pessoa2 := model.Pessoa{conta2, "Joaquim da Silva Sauro", "42833352998", "11985432691", "joaquim", "123"}
+	fmt.Println("Iniciando conexão com o banco...")
 
-	var login string
-	var senha string
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
-	var mapaLogin = map[int64]model.Pessoa{
-		1: pessoa,
-		2: pessoa2,
+	fmt.Println("Conexão iniciada com sucesso!")
+
+	if err != nil {
+		panic(errors.New("Erro ao conectar no banco de dados!"))
 	}
 
-	fmt.Println("========================BANCO DO QRT================================")
-	fmt.Println("Digite seu login:")
-	fmt.Scanln(&login)
-	fmt.Println("Digite sua senha:")
-	fmt.Scanln(&senha)
+	connection, err := db.DB()
 
-	for _, j := range mapaLogin {
-		if j.Login == login && j.Senha == senha {
-			fmt.Println("Login com sucesso!")
-			os.Exit(0)
+	defer func(connection *sql.DB) {
+		err := connection.Close()
+		if err != nil {
 		}
-	}
+		fmt.Println("Conexão com o banco interrompida!")
+	}(connection)
 
-	fmt.Println("Login errado, tente novamente!")
-	time.Sleep(time.Second * 5)
-	cmd := exec.Command("clear")
-	cmd.Stdout = os.Stdout
-	cmd.Run()
-	main()
+	err = db.AutoMigrate(&model.Conta{}, &model.Usuario{})
+
+	if err != nil {
+		panic(errors.New("Erro ao conectar no banco de dados!"))
+	}
 
 }

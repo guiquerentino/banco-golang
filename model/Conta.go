@@ -1,39 +1,16 @@
 package model
 
 import (
-	"fmt"
+	"gorm.io/gorm"
 )
 
 type Conta struct {
-	NumeroConta string
-	TipoConta   string
-	SaldoConta  float64
-}
-
-func (p *Conta) TransfereSaldo(contaDestino Conta, valor float64) error {
-
-	if p.SaldoConta < valor {
-		fmt.Println("Saldo insuficiente!")
-		return nil
-	}
-
-	p.SaldoConta -= valor
-	contaDestino.SaldoConta += valor
-	fmt.Println("Saldo transferido com sucesso!")
-	return nil
-
-}
-
-func (p *Conta) AdicionaSaldo(contaDestino Conta, valor float64) {
-	p.SaldoConta += valor
-}
-
-func (p *Conta) SacaSaldo(contaDestino Conta, valor float64) error {
-
-	if p.SaldoConta < valor {
-		fmt.Println("Saldo insuficiente!")
-		return nil
-	}
-	p.SaldoConta -= valor
-	return nil
+	gorm.Model
+	ID          uint   `gorm:"primaryKey; autoIncrement:true" json: "id"`
+	UsuarioID   string `gorm:"type:varchar(255); NOT NULL; constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"idUsuario"`
+	Usuario     Usuario
+	NumeroConta string  `gorm:"type:varchar(10); NOT NULL;" json:"numeroConta"`
+	DigitoConta string  `gorm:"type:varchar(2); NOT NULL;" json:"digitoConta"`
+	Saldo       float64 `gorm:"type:float; NOT NULL;" json:"saldo"`
+	TipoConta   int     `gorm:"type:int; NOT NULL;" json:"tipoConta"`
 }
