@@ -1,6 +1,7 @@
 package main
 
 import (
+	"banco-golang/config"
 	"banco-golang/model"
 	"database/sql"
 	"errors"
@@ -16,6 +17,8 @@ func main() {
 	fmt.Println("Iniciando conexão com o banco...")
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	rotas := config.SetaRotas(db)
 
 	fmt.Println("Conexão iniciada com sucesso!")
 
@@ -37,5 +40,7 @@ func main() {
 	if err != nil {
 		panic(errors.New("Erro ao conectar no banco de dados!"))
 	}
+
+	rotas.Run()
 
 }
