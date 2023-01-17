@@ -35,7 +35,7 @@ func main() {
 		fmt.Println("Conexão com o banco interrompida!")
 	}(connection)
 
-	err = db.AutoMigrate(&model.Conta{}, &model.Usuario{})
+	err = db.AutoMigrate(&model.Usuario{})
 
 	if err != nil {
 		panic(errors.New("Erro ao conectar no banco de dados!"))
